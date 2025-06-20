@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  script-runner:
+    build: .
+    container_name: simplon-script
+    depends_on:
+      - db
+    volumes:
+      - .:/usr/src/app
+      - ./db_data:/data
+#      - ./db_data:/data  # Share the DB volume with Python container
+#      - /mnt/c/Users/A.S.A/Desktop/sales_analysis/script_runner/data:/data
+    working_dir: /usr/src/app
+    # command: ["sh", "-c", "python scripts/main.py && tail -f /dev/null"]
+    command: ["sh", "-c", "python scripts/main.py && python scripts/analysis.py && tail -f /dev/null"]
+
+  db:
+    image: nouchka/sqlite3:latest
+    container_name: simplon-db
+    volumes:
+      - ./db_data:/data  # Fixed indentation (2 spaces)
+#    command: ["python", "scripts/main.py"]
+#    command: ["sqlite3", "/data/sales.db", "CREATE TABLE IF NOT EXISTS test (id INTEGER);"]
+    stdin_open: true
+    tty: true
